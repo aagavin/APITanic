@@ -1,2 +1,2 @@
-web: gunicorn presto.main:api --preload
+web: gunicorn apitanic.main:api --preload
 
