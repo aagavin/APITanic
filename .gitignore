@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+pip install py2swagger# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
