@@ -1,7 +1,10 @@
 import ujson as json
 import falcon
-from falcon import Request,Response
+from falcon import Request, Response
 
+from apitanic.controller.imdb import ImdbController
+
+# py2swagger falcon apitanic.main:app
 
 class HelloWorld:
 
@@ -30,11 +33,12 @@ class HelloWorld:
         )
 
 
-api = falcon.API()
-api.add_route('/', HelloWorld())
+app = falcon.API()
+app.add_route('/', HelloWorld())
+app.add_route('/imdb/{imdbtype}', ImdbController())
 
 if __name__ == '__main__':
     from wsgiref import simple_server
-    httpd = simple_server.make_server('127.0.0.1', 8000, api)
+    httpd = simple_server.make_server('127.0.0.1', 8000, app)
     print('--> server ready')
     httpd.serve_forever()
