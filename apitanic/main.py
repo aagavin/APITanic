@@ -8,6 +8,7 @@ public_cors = CORS(allow_all_origins=True)
 
 # py2swagger falcon apitanic.main:app
 
+
 class HelloWorld:
     def on_get(self, req :Request, resp: Response):
         """
