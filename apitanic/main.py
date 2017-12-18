@@ -18,8 +18,7 @@ class HelloWorld:
         :return:
         """
         
-        resp.body = json.dumps(
-            ***REMOVED***
+        resp.body = json.dumps(***REMOVED***
                 'success': True,
                 'name': 'API Tanic',
                 'tagline': 'The API that never goes down',
