@@ -18,8 +18,7 @@ class HelloWorld:
         :return:
         """
         
-        resp.body = json.dumps(
-            {
+        resp.body = json.dumps({
                 'success': True,
                 'name': 'API Tanic',
                 'tagline': 'The API that never goes down',
