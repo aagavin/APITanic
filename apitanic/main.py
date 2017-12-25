@@ -4,7 +4,11 @@ from falcon_cors import CORS
 from falcon import Request, Response
 from apitanic.controller.imdb import ImdbController
 
+from apitanic.model.firebase import Firebase
+
+
 public_cors = CORS(allow_all_origins=True)
+firebase = Firebase()
 
 # py2swagger falcon apitanic.main:app
 
@@ -36,6 +40,7 @@ class HelloWorld:
 app = falcon.API(middleware=[public_cors.middleware])
 app.add_route('/', HelloWorld())
 app.add_route('/imdb/{imdbtype}', ImdbController())
+
 
 if __name__ == '__main__':
     from wsgiref import simple_server
