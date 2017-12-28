@@ -10,7 +10,6 @@ class ImdbController:
         pass
 
     def on_get(self, req: Request, resp: Response, imdbtype):
-
         if imdbtype == 'getTitleById':
             id = req.get_param('id')
             title = self.imdb.get_title_by_id(id)
@@ -22,4 +21,8 @@ class ImdbController:
             movie = self.imdb.search_for_title(search)
             resp.body = json.dumps(***REMOVED***
                 'data': movie
+            ***REMOVED***)
+        else:
+            resp.body = json.dumps(***REMOVED***
+                'error': 'imdb request error'
             ***REMOVED***)
