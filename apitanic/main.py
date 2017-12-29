@@ -1,13 +1,17 @@
 import ujson as json
 import falcon
+from falcon_cors import CORS
 from falcon import Request, Response
 
 from apitanic.controller.imdb import ImdbController
+from apitanic.controller.auth import FirebaseController
+
+public_cors = CORS(allow_all_origins=True)
 
 # py2swagger falcon apitanic.main:app
 
-class HelloWorld:
 
+class HelloWorld:
     def on_get(self, req :Request, resp: Response):
         """
         Hello world example
@@ -16,8 +20,7 @@ class HelloWorld:
         :return:
         """
         
-        resp.body = json.dumps(
-            {
+        resp.body = json.dumps({
                 'success': True,
                 'name': 'API Tanic',
                 'tagline': 'The API that never goes down',
@@ -29,13 +32,14 @@ class HelloWorld:
                     'Lord of APIs',
                     'Cloudy with a change of APIs'
                 ]
-            }
-        )
+            })
 
 
-app = falcon.API()
+app = falcon.API(middleware=[public_cors.middleware])
 app.add_route('/', HelloWorld())
+app.add_route('/user/create', FirebaseController())
 app.add_route('/imdb/{imdbtype}', ImdbController())
+
 
 if __name__ == '__main__':
     from wsgiref import simple_server
