@@ -7,7 +7,7 @@ gunicorn==19.7.1
 idna==2.6
 imdbpie==4.3.0
 lockfile==0.12.2
-marshmallow
+marshmallow==3.0.0b4
 msgpack-python==0.4.8
 python-mimeparse==1.6.0
 requests==2.18.4
