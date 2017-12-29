@@ -1,26 +1,22 @@
-import ujson as json
-import falcon
-from falcon_cors import CORS
-from falcon import Request, Response
+from apitanic.controller.imdb import imdbBlueprint
+from apitanic.controller.auth import userBlueprint
+from sanic import Sanic
+from sanic.response import json
+from sanic_cors import CORS, cross_origin
 
-from apitanic.controller.imdb import ImdbController
-from apitanic.controller.auth import FirebaseController
 
-public_cors = CORS(allow_all_origins=True)
+app = Sanic()
+app.blueprint(userBlueprint)
+app.blueprint(imdbBlueprint)
+cors = CORS(app, resources=***REMOVED***"*": ***REMOVED***"origins": "*"***REMOVED******REMOVED***)
+
 
 # py2swagger falcon apitanic.main:app
 
 
-class HelloWorld:
-    def on_get(self, req :Request, resp: Response):
-        """
-        Hello world example
-        :param req:
-        :param resp:
-        :return:
-        """
-        
-        resp.body = json.dumps(***REMOVED***
+@app.route("/")
+async def test(request):
+    return json(***REMOVED***
                 'success': True,
                 'name': 'API Tanic',
                 'tagline': 'The API that never goes down',
@@ -35,14 +31,5 @@ class HelloWorld:
             ***REMOVED***)
 
 
-app = falcon.API(middleware=[public_cors.middleware])
-app.add_route('/', HelloWorld())
-app.add_route('/user/create', FirebaseController())
-app.add_route('/imdb/***REMOVED***imdbtype***REMOVED***', ImdbController())
-
-
-if __name__ == '__main__':
-    from wsgiref import simple_server
-    httpd = simple_server.make_server('127.0.0.1', 8000, app)
-    print('--> server ready')
-    httpd.serve_forever()
+if __name__ == "__main__":
+    app.run(port=8000, debug=True)
