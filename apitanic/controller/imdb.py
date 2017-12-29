@@ -1,31 +1,32 @@
+import ujson
+import grequests as requests
 from imdbpie import Imdb
-import ujson as json
-from falcon import Request, Response
+from sanic.response import json
+from sanic.request import Request
+from sanic import Blueprint
+
+imdb = Imdb()
+
+imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 
 
-class ImdbController:
-    imdb = Imdb()
+@imdbBlueprint.route('/title/<imdbid>', methods=['GET'])
+async def title_by_id(request: Request, imdbid: str):
+    title = imdb.get_title_by_id(imdbid)
+    return json(***REMOVED***'data': title***REMOVED***)
 
-    def __init__(self):
-        pass
 
-    def on_get(self, req: Request, resp: Response, imdbtype):
-        if imdbtype == 'getTitleById':
-            id = req.get_param('id')
-            title = self.imdb.get_title_by_id(id)
-            resp.body = json.dumps(***REMOVED***
-                'data': title
-            ***REMOVED***)
-        elif imdbtype == 'search':
-            search = req.get_param('q')
-            movie = self.imdb.search_for_title(search)
-            resp.body = json.dumps(***REMOVED***
-                'data': movie
-            ***REMOVED***)
-        elif imdbtype == 'popular':
-            movies = self.imdb.popular_movies()
-            resp.body = json.dumps(***REMOVED***
-                'data': ***REMOVED***'movies': movies***REMOVED***
-            ***REMOVED***)
-        else:
-            resp.body = json.dumps(***REMOVED***'error': 'imdb request error'***REMOVED***)
+@imdbBlueprint.route('/search', methods=['GET'])
+async def search_movie(request: Request):
+    movie_query = request.args['q'][0]
+    url = [f"https://v2.sg.media-imdb.com/suggests/***REMOVED***movie_query[0]***REMOVED***/***REMOVED***movie_query***REMOVED***.json"]
+    rs = (requests.get(u) for u in url)
+    # returns AsyncRequest that is auto awaited
+    data = requests.map(rs)[0]
+    movies = ujson.loads(data.text.split('(')[1].split(')')[0])
+    return json(***REMOVED***'data': movies['d']***REMOVED***)
+
+
+@imdbBlueprint.route('/popular', methods=['GET'])
+async def popular_movies(request: Request):
+    return json(***REMOVED***'data': ***REMOVED***'movies': imdb.popular_movies()***REMOVED******REMOVED***)
