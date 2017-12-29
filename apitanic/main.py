@@ -8,7 +8,7 @@ from sanic_cors import CORS, cross_origin
 app = Sanic()
 app.blueprint(userBlueprint)
 app.blueprint(imdbBlueprint)
-cors = CORS(app, resources=***REMOVED***"*": ***REMOVED***"origins": "*"***REMOVED******REMOVED***)
+cors = CORS(app, resources={"*": {"origins": "*"}})
 
 
 # py2swagger falcon apitanic.main:app
@@ -16,7 +16,7 @@ cors = CORS(app, resources=***REMOVED***"*": ***REMOVED***"origins": "*"***REMOV
 
 @app.route("/")
 async def test(request):
-    return json(***REMOVED***
+    return json({
                 'success': True,
                 'name': 'API Tanic',
                 'tagline': 'The API that never goes down',
@@ -28,7 +28,7 @@ async def test(request):
                     'Lord of APIs',
                     'Cloudy with a change of APIs'
                 ]
-            ***REMOVED***)
+            })
 
 
 if __name__ == "__main__":
