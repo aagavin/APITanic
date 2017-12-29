@@ -21,7 +21,7 @@ gunicorn==19.7.1
 idna==2.6
 imdbpie==4.3.0
 lockfile==0.12.2
-marshmallow
+marshmallow==3.0.0b4
 msgpack-python==0.4.8
 ply==3.8
 protobuf==3.5.1
