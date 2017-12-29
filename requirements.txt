@@ -33,6 +33,7 @@ requests==2.18.4
 rsa==3.4.2
 sanic==0.7.0
 Sanic-Cors==0.9.3
+sanic-openapi==0.4.0
 Sanic-Plugins-Framework==0.5.0.dev20171225
 six==1.11.0
 ujson==1.35
