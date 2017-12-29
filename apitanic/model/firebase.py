@@ -18,3 +18,4 @@ cred = credentials.Certificate(***REMOVED***
 
 firebase_app = firebase_admin.initialize_app(cred)
 firebase_db = firestore.client()
+2

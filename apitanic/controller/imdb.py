@@ -23,3 +23,8 @@ class ImdbController:
             resp.body = json.dumps(***REMOVED***
                 'data': movie
             ***REMOVED***)
+        elif imdbtype == 'popular':
+            movies = self.imdb.popular_movies()
+            resp.body = json.dumps(***REMOVED***
+                'data': ***REMOVED***'movies': movies***REMOVED***
+            ***REMOVED***)
