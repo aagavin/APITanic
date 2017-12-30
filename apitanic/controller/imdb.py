@@ -1,28 +1,41 @@
+import ujson
+import grequests as requests
 from imdbpie import Imdb
-import ujson as json
-from falcon import Request, Response
+from sanic.response import json
+from sanic.request import Request
+from sanic import Blueprint
+from sanic_openapi import doc
+
+imdb = Imdb()
+
+imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 
 
-class ImdbController:
-    imdb = Imdb()
+@imdbBlueprint.route('/title/<imdbid>/', methods=['GET'])
+@doc.summary("get movie by imdbid")
+@doc.consumes({"imdbid": str}, location="path")
+@doc.produces({'data': {'movie': object}})
+async def title_by_id(request: Request, imdbid: str):
+    title = imdb.get_title_by_id(imdbid)
+    return json({'data': {'movie': title}})
 
-    def __init__(self):
-        pass
 
-    def on_get(self, req: Request, resp: Response, imdbtype):
-        if imdbtype == 'getTitleById':
-            id = req.get_param('id')
-            title = self.imdb.get_title_by_id(id)
-            resp.body = json.dumps({
-                'data': title
-            })
-        elif imdbtype == 'search':
-            search = req.get_param('q')
-            movie = self.imdb.search_for_title(search)
-            resp.body = json.dumps({
-                'data': movie
-            })
-        else:
-            resp.body = json.dumps({
-                'error': 'imdb request error'
-            })
+@imdbBlueprint.route('/search/', methods=['GET'])
+@doc.summary("Search movies in imdb")
+@doc.consumes({"q": str}, location="query")
+@doc.produces({'data': list})
+async def search_movie(request: Request):
+    movie_query = request.args['q'][0]
+    url = [f"https://v2.sg.media-imdb.com/suggests/{movie_query[0]}/{movie_query}.json"]
+    rs = (requests.get(u) for u in url)
+    # returns AsyncRequest that is auto awaited
+    data = requests.map(rs)[0]
+    movies = ujson.loads(data.text.split('(')[1].split(')')[0])
+    return json({'data': movies['d']})
+
+
+@imdbBlueprint.route('/popular/', methods=['GET'])
+@doc.summary("Most popular movies")
+@doc.produces({'data': {'movies': object}})
+async def popular_movies(request: Request):
+    return json({'data': {'movies': imdb.popular_movies()}})
