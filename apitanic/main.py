@@ -24,7 +24,7 @@ app.blueprint(swagger_blueprint)
 cors = CORS(app, resources={"*": {"origins": "*"}})
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'OPTIONS'])
 @doc.summary("Simple hello world request")
 @doc.produces({"success": str, "name": str, "tagline": str, "tagline2": str, "AKA": list})
 async def test(request):

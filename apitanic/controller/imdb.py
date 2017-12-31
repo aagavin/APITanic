@@ -11,7 +11,7 @@ imdb = Imdb()
 imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 
 
-@imdbBlueprint.route('/title/<imdbid>/', methods=['GET'])
+@imdbBlueprint.route('/title/<imdbid>/', methods=['GET', 'OPTIONS'])
 @doc.summary("get movie by imdbid")
 @doc.consumes({"imdbid": str}, location="path")
 @doc.produces({'data': {'movie': object}})
@@ -20,7 +20,7 @@ async def title_by_id(request: Request, imdbid: str):
     return json({'data': {'movie': title}})
 
 
-@imdbBlueprint.route('/search/', methods=['GET'])
+@imdbBlueprint.route('/search/', methods=['GET', 'OPTIONS'])
 @doc.summary("Search movies in imdb")
 @doc.consumes({"q": str}, location="query")
 @doc.produces({'data': list})
@@ -34,7 +34,7 @@ async def search_movie(request: Request):
     return json({'data': movies['d']})
 
 
-@imdbBlueprint.route('/popular/', methods=['GET'])
+@imdbBlueprint.route('/popular/', methods=['GET', 'OPTIONS'])
 @doc.summary("Most popular movies")
 @doc.produces({'data': {'movies': object}})
 async def popular_movies(request: Request):
