@@ -21,7 +21,7 @@ app.blueprint(imdbBlueprint)
 app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
 
-cors = CORS(app, resources={"*": {"origins": "*"}})
+# cors = CORS(app, resources={"*": {"origins": "*"}})
 
 
 @app.route("/", methods=['GET', 'OPTIONS'])
