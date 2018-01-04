@@ -1,6 +1,7 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
+from google.cloud.firestore_v1beta1 import CollectionReference
 
 cred = credentials.Certificate({
     "type": os.getenv("type"),
@@ -36,7 +37,14 @@ class Firebase:
 
         return auth.create_custom_token(user.uid)
 
-    @staticmethod
-    def get_user_id_by_token(self, token:str):
+    def get_user_id_by_token(token: str):
         decoded_token = auth.verify_id_token(token)
         return decoded_token['uid']
+
+    def get_all_favourites(self, token: str):
+        user_id = self.get_user_id_by_token()
+        users_ref = firebase_db.collection('favourites').where('userid', '==', user_id)
+        return users_ref.get().to_dict()
+
+    def add_favourite(self, imdbid: str, token: str):
+        pass
