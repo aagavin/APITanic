@@ -18,7 +18,7 @@ imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 @doc.produces({'data': {'movie': object}})
 async def title_by_id(request: Request, imdbid: str):
     api_key = os.getenv('openapikey')
-    url = f'https://www.omdbapi.com/?i={imdbid}&apikey={api_key}'
+    url = 'https://www.omdbapi.com/?i={}&apikey={}'.format(imdbid, api_key)
     data = requests.get(url)
     return json({'data': {'movie': data.json()}})
 
@@ -30,10 +30,10 @@ async def title_by_id(request: Request, imdbid: str):
 @doc.produces({'data': list})
 async def search_movie(request: Request):
     movie_query = request.args['q'][0].replace(' ', '_').lower()
-    url = f'https://v2.sg.media-imdb.com/suggests/{movie_query[0]}/{movie_query}.json'
+    url = 'https://v2.sg.media-imdb.com/suggests/{}/{}.json'.format(movie_query[0], movie_query)
     rs = requests.get(url)
     data = rs.text
-    movies = ujson.loads(data.split(f'${movie_query}(')[1][:-1])
+    movies = ujson.loads(data.split('${}('.format(movie_query))[1][:-1])
     movies_only = [m for m in movies['d'] if m.get('q') is not None and m['q'] == 'feature']
     return json({'data': movies_only})
 
