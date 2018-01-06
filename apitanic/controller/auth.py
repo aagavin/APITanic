@@ -14,7 +14,7 @@ firebase = Firebase()
 @doc.consumes({"user": str, "displayName": str, "email": str}, location="body")
 @doc.description("Create a user account and returns a token")
 @doc.produces({'data': {'token': str}})
-async def create_accoutn(request: Request):
+async def create_account(request: Request):
     token = firebase.create_account(
         request.json['email'],
         request.json['password'],
