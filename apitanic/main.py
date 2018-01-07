@@ -7,7 +7,7 @@ from apitanic.controller.auth import userBlueprint
 from apitanic.controller.favourites import favBlueprint
 
 
-app = Sanic()
+app = Sanic(strict_slashes=True)
 
 app.config.API_VERSION = '0.5.0'
 app.config.API_TITLE = 'ApiTanic'
