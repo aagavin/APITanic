@@ -14,6 +14,18 @@ firebase = Firebase()
 
 class FavouritesController(HTTPMethodView):
 
+    @staticmethod
+    async def get_by_id(request: Request, imdbid: str) -> HTTPResponse:
+        token = request.headers['token']
+        user_id = firebase.get_user_id_by_token(token)
+        fav = []
+        fav_ref = firebase.get_favouties_by_id(user_id, imdbid)
+        for f in fav_ref:
+            fav.append(f.to_dict())
+        print(fav)
+        return json({'data': {'favourite': fav}})
+        # return json({'data': imdbid, 'dd': request.headers['token']})
+
     @doc.summary('Gets a users favourites')
     @doc.description('With the token in the header returns list of favourites')
     @doc.consumes({"token": str}, location='header')
@@ -49,3 +61,4 @@ class FavouritesController(HTTPMethodView):
 
 
 favBlueprint.add_route(FavouritesController.as_view(), '/')
+favBlueprint.add_route(FavouritesController.get_by_id, '/<imdbid>')
