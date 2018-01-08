@@ -46,3 +46,5 @@ class FriendsController(HTTPMethodView):
         friend_id = request.json['friend_id']
         firebase.delete_friend(token, friend_id)
         return json({'data': {'success': True}})
+
+friendBlueprint.add_route(FriendsController.as_view(), '/')
