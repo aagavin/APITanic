@@ -23,7 +23,7 @@ firebase_db = firestore.client()
 class Firebase:
 
     def __init__(self):
-        self.favourites_ref: CollectionReference = firebase_db.collection('favourites')
+        self.favourites_ref = firebase_db.collection('favourites')
 
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
         return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()

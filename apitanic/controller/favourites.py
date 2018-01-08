@@ -24,7 +24,6 @@ class FavouritesController(HTTPMethodView):
             fav.append(f.to_dict())
         print(fav)
         return json({'data': {'favourite': fav}})
-        # return json({'data': imdbid, 'dd': request.headers['token']})
 
     @doc.summary('Gets a users favourites')
     @doc.description('With the token in the header returns list of favourites')

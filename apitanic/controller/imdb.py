@@ -52,7 +52,7 @@ async def popular_movies(request: Request):
     titles = raw_string.xpath('//td[@class=\'titleColumn\']/a')
     ratings = raw_string.xpath('//td[@class=\'ratingColumn imdbRating\']')
 
-    popular_movies_list: list = []
+    popular_movies_list = []
 
     for i in range(50):
         # ratings[i].getchildren()
