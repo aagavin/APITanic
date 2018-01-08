@@ -24,6 +24,7 @@ class Firebase:
 
     def __init__(self):
         self.favourites_ref = firebase_db.collection('favourites')
+        self.user_ref = firebase_db.collection('users')
 
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
         return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
@@ -67,3 +68,14 @@ class Firebase:
         doc_refs = self.get_favouties_by_id(user_id, imdb_id)
         for fav in doc_refs:
             fav.reference.delete()
+
+    def add_friends(self, token: str, user_id: str, friend_id: str) -> bool:
+        user_id = self.get_user_id_by_token(token)
+        friends = self.get_user_by_id(user_id).friends
+        count = sum(1 for x in friends)
+        if count != 0:
+            return False
+        friend_list =  friends.append(friend_id)
+        self.user_ref.child('friends').set(friend_list)
+        return True
+
