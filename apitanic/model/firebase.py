@@ -1,6 +1,7 @@
 import os
 import firebase_admin
 from firebase_admin import credentials, firestore, auth
+from google.cloud.firestore_v1beta1 import CollectionReference
 
 cred = credentials.Certificate({
     "type": os.getenv("type"),
@@ -22,7 +23,10 @@ firebase_db = firestore.client()
 class Firebase:
 
     def __init__(self):
-        pass
+        self.favourites_ref = firebase_db.collection('favourites')
+
+    def get_favouties_by_id(self, user_id: str, imdb_id: str):
+        return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
 
     def create_account(self, email: str, password: str, display_name: str) -> str:
         user = auth.create_user(
@@ -33,10 +37,33 @@ class Firebase:
             disabled=False,
             app=firebase_app
         )
-
         return auth.create_custom_token(user.uid)
 
-    @staticmethod
-    def get_user_id_by_token(self, token:str):
+    def get_user_id_by_token(self, token: str):
         decoded_token = auth.verify_id_token(token)
         return decoded_token['uid']
+
+    def get_all_favourites(self, token: str):
+        user_id = self.get_user_id_by_token(token)
+        favourite_document_ref = self.favourites_ref.where('userid', '==', user_id).get()
+        fav_list = []
+        for fav in favourite_document_ref:
+            fav_list.append(fav.to_dict())
+        return fav_list
+
+    def add_favourite(self, token: str, imdb_id: str) -> bool:
+        user_id = self.get_user_id_by_token(token)
+        favs = self.get_favouties_by_id(user_id, imdb_id)
+        count = sum(1 for x in favs)
+        if count != 0:
+            return False
+        favourite = {'imdbid': imdb_id, 'userid': user_id}
+        ref = self.favourites_ref.document()
+        ref.set(favourite)
+        return True
+
+    def delete_favourite(self, token: str, imdb_id: str):
+        user_id = self.get_user_id_by_token(token)
+        doc_refs = self.get_favouties_by_id(user_id, imdb_id)
+        for fav in doc_refs:
+            fav.reference.delete()

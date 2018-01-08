@@ -1,13 +1,13 @@
 from sanic import Sanic
 from sanic.response import json
-from sanic_cors import CORS, cross_origin
 from sanic_openapi import swagger_blueprint, openapi_blueprint, doc
 
 from apitanic.controller.imdb import imdbBlueprint
 from apitanic.controller.auth import userBlueprint
+from apitanic.controller.favourites import favBlueprint
 
 
-app = Sanic()
+app = Sanic(strict_slashes=True)
 
 app.config.API_VERSION = '0.5.0'
 app.config.API_TITLE = 'ApiTanic'
@@ -18,14 +18,15 @@ app.config.API_CONTACT_EMAIL = 'apitanic@example.com'
 
 app.blueprint(userBlueprint)
 app.blueprint(imdbBlueprint)
+app.blueprint(favBlueprint)
+
 app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
 
-# cors = CORS(app, resources={"*": {"origins": "*"}})
-
 
 @app.route("/", methods=['GET', 'OPTIONS'])
-@doc.summary("Simple hello world request")
+@doc.summary("Simple hello")
+@doc.description("Simple hello world request")
 @doc.produces({"success": str, "name": str, "tagline": str, "tagline2": str, "AKA": list})
 async def test(request):
     return json({
