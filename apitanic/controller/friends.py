@@ -20,22 +20,19 @@ class FriendsController(HTTPMethodView):
     @doc.produces({'data': {'friends': List[str]}})
     async def get(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
-        friends = firebase.get_user_by_id(token).friends
+        friends = firebase.get_user_by_id(firebase.get_user_id_by_token(token)).friends
         return json({'data': {'friends': friends}})
 
-    @doc.summary('Adds a new favourite')
-    @doc.description('Adds a new favourite to a users list of favourite')
+    @doc.summary('Adds a new friend')
+    @doc.description('Adds a new friend to a users list of friends')
     @doc.consumes({'token': str}, location='header')
-    @doc.consumes('user_id', location='body')
     @doc.consumes('friend_id', location='body')
     @doc.produces({'data': {'success': bool}})
     async def post(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
-        user_id = request.json['user_id']
         friend_id = request.json['friend_id']
-        added = firebase.add_friend(token, user_id, friend_id)
+        added = firebase.add_friend(token, friend_id)
         if not added:
             return json({'data': {'success': False, 'message': 'friend already added'}})
         return json({'data': {'success': True}})
 
-   

@@ -69,13 +69,17 @@ class Firebase:
         for fav in doc_refs:
             fav.reference.delete()
 
-    def add_friends(self, token: str, user_id: str, friend_id: str) -> bool:
+    @staticmethod
+    def get_user_by_id(self, userid: str):
+        return auth.get_user(userid)
+
+    def add_friend(self, token: str, friend_id: str) -> bool:
         user_id = self.get_user_id_by_token(token)
         friends = self.get_user_by_id(user_id).friends
         count = sum(1 for x in friends)
         if count != 0:
             return False
         friend_list =  friends.append(friend_id)
-        self.user_ref.child('friends').set(friend_list)
+        self.user_ref.where('uid', '==', user_id).child('friends').update(friend_list)
         return True
 
