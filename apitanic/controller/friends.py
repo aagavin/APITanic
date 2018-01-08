@@ -8,7 +8,7 @@ from sanic_openapi import doc
 
 from ..model.user import UserSchema
 
-favBlueprint = Blueprint('friends', url_prefix='friends')
+friendBlueprint = Blueprint('friends', url_prefix='friends')
 firebase = Firebase()
 
 
@@ -36,3 +36,13 @@ class FriendsController(HTTPMethodView):
             return json({'data': {'success': False, 'message': 'friend already added'}})
         return json({'data': {'success': True}})
 
+    @doc.summary('Remove a friend')
+    @doc.description('Remove a user friend')
+    @doc.consumes({'token': str}, location='header')
+    @doc.consumes('friend_id', location='body')
+    @doc.produces({'data': {'success': bool}})
+    async def delete(self, request) -> HTTPResponse:
+        token = request.headers['token']
+        friend_id = request.json['friend_id']
+        firebase.delete_friend(token, friend_id)
+        return json({'data': {'success': True}})

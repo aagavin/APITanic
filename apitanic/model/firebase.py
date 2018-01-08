@@ -83,3 +83,10 @@ class Firebase:
         self.user_ref.where('uid', '==', user_id).child('friends').update(friend_list)
         return True
 
+    def delete_friend(self, token: str, friend_id: str):
+        user_id = self.get_user_id_by_token(token)
+        friends = self.get_user_by_id(user_id).friends
+        friends.remove(friend_id)
+        self.user_ref.where('uid', '==', user_id).child('friends').update(friend_list)
+        return True
+
