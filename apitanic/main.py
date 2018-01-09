@@ -8,7 +8,7 @@ from apitanic.controller.favourites import favBlueprint
 from apitanic.controller.friends import friendBlueprint
 
 
-app = Sanic(strict_slashes=True)
+app = Sanic()
 
 app.config.API_VERSION = '0.5.0'
 app.config.API_TITLE = 'ApiTanic'
@@ -47,4 +47,4 @@ async def test(request):
 
 
 if __name__ == "__main__":
-    app.run(port=8000)
+    app.run(port=8000, debug=True)

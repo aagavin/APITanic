@@ -24,10 +24,13 @@ class Firebase:
 
     def __init__(self):
         self.favourites_ref = firebase_db.collection('favourites')
-        self.user_ref = firebase_db.collection('users')
+        self.friends_ref = firebase_db.collection('friends')
 
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
         return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
+
+    def get_friend_by_id(self, user_id: str, friend_id: str):
+        return self.friends_ref.where('user_id', '==', user_id).where('friend_id', '==', friend_id).get()
 
     def create_account(self, email: str, password: str, display_name: str) -> str:
         user = auth.create_user(
@@ -69,24 +72,28 @@ class Firebase:
         for fav in doc_refs:
             fav.reference.delete()
 
-    @staticmethod
     def get_user_by_id(self, userid: str):
         return auth.get_user(userid)
 
-    #Friends methods
+    # Friends methods
     def add_friend(self, token: str, friend_id: str) -> bool:
         user_id = self.get_user_id_by_token(token)
-        friends = self.get_user_by_id(user_id).friends
-        count = sum(1 for x in friends)
+        fri = self.get_friend_by_id(user_id, friend_id)
+        count = sum(1 for x in fri)
         if count != 0:
             return False
-        friend_list =  friends.append(friend_id)
-        self.user_ref.where('uid', '==', user_id).child('friends').update(friend_list)
+        friend = {'user_id': user_id, 'friend_id': friend_id}
+        ref = self.friends_ref.document()
+        ref.set(friend)
         return True
 
     def delete_friend(self, token: str, friend_id: str):
         user_id = self.get_user_id_by_token(token)
-        friends = self.get_user_by_id(user_id).friends
-        friends.remove(friend_id)
-        self.user_ref.where('uid', '==', user_id).child('friends').update(friends)
+        friend = self.get_friend_by_id(user_id, friend_id)
+        friend.reference.delete()
         return True
+
+    def get_friends(self, token: str):
+        user_id = self.get_user_id_by_token(token)
+        friends = self.friends_ref.where('user_id', '==', user_id).get()
+        return friends

@@ -5,8 +5,9 @@ from sanic.response import json, HTTPResponse
 from sanic.request import Request
 from sanic.views import HTTPMethodView
 from sanic_openapi import doc
+from firebase_admin import auth
 
-from ..model.user import UserSchema
+from ..model.friends import UserSchema
 
 friendBlueprint = Blueprint('friends', url_prefix='friends')
 firebase = Firebase()
@@ -20,7 +21,7 @@ class FriendsController(HTTPMethodView):
     @doc.produces({'data': {'friends': List[str]}})
     async def get(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
-        friends = firebase.get_user_by_id(firebase.get_user_id_by_token(token)).friends
+        friends = firebase.get_friends(token)
         return json({'data': {'friends': friends}})
 
     @doc.summary('Adds a new friend')
@@ -46,6 +47,16 @@ class FriendsController(HTTPMethodView):
         friend_id = request.json['friend_id']
         firebase.delete_friend(token, friend_id)
         return json({'data': {'success': True}})
+
+    # @doc.summary('Gets a user by email')
+    # @doc.description('With the token  and email in the header returns user')
+    # @doc.consumes({"token": str}, location='header')
+    # @doc.consumes({'email': str}, location='header')
+    # @doc.produces({'data': {'friends': List[str]}})
+    # async def get(self, request: Request) -> HTTPResponse:
+    #     token = request.headers['token']
+    #     friend = auth.get_user_by_email(request.headers['email'])
+    #     return json({'data': {'friend': friend}})
 
 
 friendBlueprint.add_route(FriendsController.as_view(), '/')
