@@ -54,7 +54,7 @@ class FavouritesController(HTTPMethodView):
     @doc.produces({'data': {'success': bool}})
     async def delete(self, request) -> HTTPResponse:
         token = request.headers['token']
-        imdb_id = request.json['imdbId']
+        imdb_id = request.headers['imdbId']
         firebase.delete_favourite(token, imdb_id)
         return json({'data': {'success': True}})
 
