@@ -3,7 +3,7 @@ from sanic.response import json
 from sanic_openapi import swagger_blueprint, openapi_blueprint, doc
 
 from apitanic.controller.imdb import imdbBlueprint
-from apitanic.controller.auth import userBlueprint
+from apitanic.controller.user import userBlueprint
 from apitanic.controller.favourites import favBlueprint
 
 
