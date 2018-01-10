@@ -72,7 +72,7 @@ class Firebase:
         count = sum(1 for x in favs)
         if count != 0:
             return False
-        favourite = {'imdbid': imdb_id, 'userid': user_id}
+        favourite = {'imdb_id': imdb_id, 'user_id': user_id}
         ref = self.favourites_ref.document()
         ref.set(favourite)
         return True
@@ -86,6 +86,14 @@ class Firebase:
     def get_friends_by_id(self, user_id: str, friend_id: str):
         return self.friends_ref.where('friend_id', '==', friend_id).where('user_id', '==', user_id).get()
 
+    def get_all_friends(self, token: str):
+        user_id = self.get_user_id_by_token(token)
+        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
+        fri_list = []
+        for fav in favourite_document_ref:
+            fri_list.append(fav.to_dict())
+        return fri_list
+
     def add_friend(self, token: str, friend_id: str):
         user_id = self.get_user_id_by_token(token)
         friends = self.get_favouties_by_id(user_id, friend_id)
@@ -96,3 +104,9 @@ class Firebase:
         ref = self.favourites_ref.document()
         ref.set(friend)
         return True
+
+    def delete_friend(self, token, friend_id):
+        user_id = self.get_user_id_by_token(token)
+        doc_refs = self.get_friends_by_id(user_id, friend_id)
+        for fri in doc_refs:
+            fri.reference.delete()
