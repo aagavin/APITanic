@@ -25,8 +25,19 @@ class Firebase:
     def __init__(self):
         self.favourites_ref = firebase_db.collection('favourites')
 
-    def get_favouties_by_id(self, user_id: str, imdb_id: str):
-        return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
+    def search_user(self, search_query) -> list:
+        page = auth.list_users()
+        user_list = []
+        while page:
+            for user in page.users:
+                if search_query in user.email or search_query in user.display_name:
+                    user_list.append({
+                        'uid': user.uid,
+                        'display_name': user.display_name,
+                        'email': user.email
+                    })
+            page = page.get_next_page()
+        return user_list
 
     def create_account(self, email: str, password: str, display_name: str) -> str:
         user = auth.create_user(
@@ -42,6 +53,9 @@ class Firebase:
     def get_user_id_by_token(self, token: str):
         decoded_token = auth.verify_id_token(token)
         return decoded_token['uid']
+
+    def get_favouties_by_id(self, user_id: str, imdb_id: str):
+        return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
 
     def get_all_favourites(self, token: str):
         user_id = self.get_user_id_by_token(token)
