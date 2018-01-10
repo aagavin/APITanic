@@ -5,9 +5,10 @@ from sanic_openapi import swagger_blueprint, openapi_blueprint, doc
 from apitanic.controller.imdb import imdbBlueprint
 from apitanic.controller.user import userBlueprint
 from apitanic.controller.favourites import favBlueprint
+from apitanic.controller.friends import friendBlueprint
 
 
-app = Sanic(strict_slashes=True)
+app = Sanic()
 
 app.config.API_VERSION = '0.5.0'
 app.config.API_TITLE = 'ApiTanic'
@@ -19,6 +20,7 @@ app.config.API_CONTACT_EMAIL = 'apitanic@example.com'
 app.blueprint(userBlueprint)
 app.blueprint(imdbBlueprint)
 app.blueprint(favBlueprint)
+app.blueprint(friendBlueprint)
 
 app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
@@ -45,4 +47,4 @@ async def test(request):
 
 
 if __name__ == "__main__":
-    app.run(port=8000)
+    app.run(port=8000, debug=True)

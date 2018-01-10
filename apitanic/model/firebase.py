@@ -24,6 +24,7 @@ class Firebase:
 
     def __init__(self):
         self.favourites_ref = firebase_db.collection('favourites')
+        self.friends_ref = firebase_db.collection('friends')
 
     def search_user(self, search_query) -> list:
         page = auth.list_users()
@@ -38,6 +39,9 @@ class Firebase:
                     })
             page = page.get_next_page()
         return user_list
+
+    def get_friend_by_id(self, user_id: str, friend_id: str):
+        return self.friends_ref.where('user_id', '==', user_id).where('friend_id', '==', friend_id).get()
 
     def create_account(self, email: str, password: str, display_name: str) -> str:
         user = auth.create_user(
@@ -81,3 +85,29 @@ class Firebase:
         doc_refs = self.get_favouties_by_id(user_id, imdb_id)
         for fav in doc_refs:
             fav.reference.delete()
+
+    def get_user_by_id(self, userid: str):
+        return auth.get_user(userid)
+
+    # Friends methods
+    def add_friend(self, token: str, friend_id: str) -> bool:
+        user_id = self.get_user_id_by_token(token)
+        fri = self.get_friend_by_id(user_id, friend_id)
+        count = sum(1 for x in fri)
+        if count != 0:
+            return False
+        friend = {'user_id': user_id, 'friend_id': friend_id}
+        ref = self.friends_ref.document()
+        ref.set(friend)
+        return True
+
+    def delete_friend(self, token: str, friend_id: str):
+        user_id = self.get_user_id_by_token(token)
+        friend = self.get_friend_by_id(user_id, friend_id)
+        friend.reference.delete()
+        return True
+
+    def get_friends(self, token: str):
+        user_id = self.get_user_id_by_token(token)
+        friends = self.friends_ref.where('user_id', '==', user_id).get()
+        return friends
