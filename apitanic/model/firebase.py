@@ -24,6 +24,7 @@ class Firebase:
 
     def __init__(self):
         self.favourites_ref = firebase_db.collection('favourites')
+        self.friends_ref = firebase_db.collection('friends')
 
     def search_user(self, search_query) -> list:
         page = auth.list_users()
@@ -55,11 +56,11 @@ class Firebase:
         return decoded_token['uid']
 
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
-        return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
+        return self.favourites_ref.where('user_id', '==', user_id).where('imdb_id', '==', imdb_id).get()
 
     def get_all_favourites(self, token: str):
         user_id = self.get_user_id_by_token(token)
-        favourite_document_ref = self.favourites_ref.where('userid', '==', user_id).get()
+        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
         fav_list = []
         for fav in favourite_document_ref:
             fav_list.append(fav.to_dict())
@@ -81,3 +82,17 @@ class Firebase:
         doc_refs = self.get_favouties_by_id(user_id, imdb_id)
         for fav in doc_refs:
             fav.reference.delete()
+
+    def get_friends_by_id(self, user_id: str, friend_id: str):
+        return self.friends_ref.where('friend_id', '==', friend_id).where('user_id', '==', user_id).get()
+
+    def add_friend(self, token: str, friend_id: str):
+        user_id = self.get_user_id_by_token(token)
+        friends = self.get_favouties_by_id(user_id, friend_id)
+        count = sum(1 for x in friends)
+        if count != 0:
+            return False
+        friend = {'user_id': user_id, 'friend_id': friend_id}
+        ref = self.favourites_ref.document()
+        ref.set(friend)
+        return True
