@@ -17,6 +17,10 @@ class UserController(HTTPMethodView):
     @doc.consumes('q', location='query')
     @doc.produces({'data': {'results': list}})
     async def get(self, request: Request)-> HTTPResponse:
+        token = request.headers.get('token')
+        user = firebase.get_user_id_by_token(token)
+        if user is None:
+            return json({'error': 'token not valid'})
         query_string = request.args['q'][0]
         results = firebase.search_user(query_string)
         return json({'data': {'results': results}})

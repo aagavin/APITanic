@@ -57,7 +57,6 @@ class Firebase:
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
         return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
 
-
     def get_all_favourites(self, token: str):
         user_id = self.get_user_id_by_token(token)
         favourite_document_ref = self.favourites_ref.where('userid', '==', user_id).get()
