@@ -7,7 +7,7 @@ from sanic.views import HTTPMethodView
 from sanic_openapi import doc
 from firebase_admin import auth
 
-from ..model.friends import UserSchema
+from ..model.friends import FriendsSchema
 
 friendBlueprint = Blueprint('friends', url_prefix='friends')
 firebase = Firebase()
