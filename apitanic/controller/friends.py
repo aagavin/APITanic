@@ -14,7 +14,7 @@ class FriendsController(HTTPMethodView):
     @doc.summary('')
     async def get(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
-        firends = firebase.get_all_friends(token)
+        firends = await firebase.get_all_friends(token)
         return json({'data': {'friends': firends}})
 
     @doc.summary('Add a new friend')

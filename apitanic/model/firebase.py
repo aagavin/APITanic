@@ -61,13 +61,14 @@ class Firebase:
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
         return self.favourites_ref.where('user_id', '==', user_id).where('imdb_id', '==', imdb_id).get()
 
+    def __get_favourites(self, user_id: str):
+        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
+        fav_list = [fav.to_dict() for fav in favourite_document_ref]
+        return fav_list
+
     def get_all_favourites(self, token: str):
         user_id = self.get_user_id_by_token(token)
-        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
-        fav_list = []
-        for fav in favourite_document_ref:
-            fav_list.append(fav.to_dict())
-        return fav_list
+        return self.__get_favourites(user_id)
 
     def add_favourite(self, token: str, imdb_id: str) -> bool:
         user_id = self.get_user_id_by_token(token)
@@ -89,7 +90,7 @@ class Firebase:
     def get_friends_by_id(self, user_id: str, friend_id: str):
         return self.friends_ref.where('friend_id', '==', friend_id).where('user_id', '==', user_id).get()
 
-    def get_all_friends(self, token: str):
+    async def get_all_friends(self, token: str):
         user_id = self.get_user_id_by_token(token)
         friends_document_ref = self.friends_ref.where('user_id', '==', user_id).get()
         fri_list = []
@@ -121,3 +122,17 @@ class Firebase:
         doc_refs = self.get_friends_by_id(user_id, friend_id)
         for fri in doc_refs:
             fri.reference.delete()
+
+    # TODO
+    # get users friends
+    # get users friends favourites put it in a set
+    async def get_recommendations(self, token: str):
+        users_friends = await self.get_all_friends(token)
+        user_fav = [a['imdb_id'] for a in self.get_all_favourites(token)]
+        friend_ids = [fid['user_id'] for fid in users_friends]
+        friends_fav = [self.__get_favourites(ffav) for ffav in friend_ids]
+        friends_imdb_ids = []
+        for ffav in friends_fav:
+            for f in ffav:
+                friends_imdb_ids.append(f['imdb_id'])
+        print('sdfsdf')
