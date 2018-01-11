@@ -27,7 +27,7 @@ class FavouritesController(HTTPMethodView):
 
     @doc.summary('Gets a users favourites')
     @doc.description('With the token in the header returns list of favourites')
-    @doc.consumes({"token": str}, location='header')
+    @doc.consumes({'token': str}, location='header')
     @doc.produces({'data': {'favourites': List[FavouritesSchema]}})
     async def get(self, request: Request) -> HTTPResponse:
         token = request.headers['token']

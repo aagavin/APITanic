@@ -24,13 +24,14 @@ class Firebase:
 
     def __init__(self):
         self.favourites_ref = firebase_db.collection('favourites')
+        self.friends_ref = firebase_db.collection('friends')
 
     def search_user(self, search_query) -> list:
         page = auth.list_users()
         user_list = []
         while page:
             for user in page.users:
-                if search_query in user.email or search_query in user.display_name:
+                if search_query in user.email.lower() or search_query in user.display_name.lower():
                     user_list.append({
                         'uid': user.uid,
                         'display_name': user.display_name,
@@ -50,16 +51,19 @@ class Firebase:
         )
         return auth.create_custom_token(user.uid)
 
+    def get_user_by_id(self, userid: str):
+        return auth.get_user(userid)
+
     def get_user_id_by_token(self, token: str):
         decoded_token = auth.verify_id_token(token)
         return decoded_token['uid']
 
     def get_favouties_by_id(self, user_id: str, imdb_id: str):
-        return self.favourites_ref.where('userid', '==', user_id).where('imdbid', '==', imdb_id).get()
+        return self.favourites_ref.where('user_id', '==', user_id).where('imdb_id', '==', imdb_id).get()
 
     def get_all_favourites(self, token: str):
         user_id = self.get_user_id_by_token(token)
-        favourite_document_ref = self.favourites_ref.where('userid', '==', user_id).get()
+        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
         fav_list = []
         for fav in favourite_document_ref:
             fav_list.append(fav.to_dict())
@@ -71,7 +75,7 @@ class Firebase:
         count = sum(1 for x in favs)
         if count != 0:
             return False
-        favourite = {'imdbid': imdb_id, 'userid': user_id}
+        favourite = {'imdb_id': imdb_id, 'user_id': user_id}
         ref = self.favourites_ref.document()
         ref.set(favourite)
         return True
@@ -81,3 +85,39 @@ class Firebase:
         doc_refs = self.get_favouties_by_id(user_id, imdb_id)
         for fav in doc_refs:
             fav.reference.delete()
+
+    def get_friends_by_id(self, user_id: str, friend_id: str):
+        return self.friends_ref.where('friend_id', '==', friend_id).where('user_id', '==', user_id).get()
+
+    def get_all_friends(self, token: str):
+        user_id = self.get_user_id_by_token(token)
+        friends_document_ref = self.friends_ref.where('user_id', '==', user_id).get()
+        fri_list = []
+        # get_user_by_id
+        for fav in friends_document_ref:
+            friend = self.get_user_by_id(fav.get('friend_id'))
+            fri_list.append({
+                'user_id': fav.get('user_id'),
+                'friend': {
+                    'display_name': friend.display_name,
+                    'email': friend.email
+                }
+            })
+        return fri_list
+
+    def add_friend(self, token: str, friend_id: str):
+        user_id = self.get_user_id_by_token(token)
+        friends = self.get_friends_by_id(user_id, friend_id)
+        count = sum(1 for x in friends)
+        if count != 0:
+            return False
+        friend = {'user_id': user_id, 'friend_id': friend_id}
+        ref = self.friends_ref.document()
+        ref.set(friend)
+        return True
+
+    def delete_friend(self, token, friend_id):
+        user_id = self.get_user_id_by_token(token)
+        doc_refs = self.get_friends_by_id(user_id, friend_id)
+        for fri in doc_refs:
+            fri.reference.delete()
