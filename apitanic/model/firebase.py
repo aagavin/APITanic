@@ -31,7 +31,7 @@ class Firebase:
         user_list = []
         while page:
             for user in page.users:
-                if search_query in user.email or search_query in user.display_name:
+                if search_query in user.email.lower() or search_query in user.display_name.lower():
                     user_list.append({
                         'uid': user.uid,
                         'display_name': user.display_name,
