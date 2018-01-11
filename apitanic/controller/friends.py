@@ -29,8 +29,15 @@ class FriendsController(HTTPMethodView):
             return json({'error': 'Error with adding friend'})
         return json({'data': 'success'})
 
+    @doc.summary('')
+    @doc.description('')
+    @doc.consumes('')
+    @doc.produces('')
     async def delete(self, request: Request) -> HTTPResponse:
-        pass
+        token = request.headers['token']
+        friend_id = request.headers['friend_id']
+        firebase.delete_friend(token, friend_id)
+        return json({'data': 'success'})
 
 
 friendsBlueprint.add_route(FriendsController.as_view(), '/')

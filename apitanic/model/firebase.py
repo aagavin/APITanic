@@ -51,6 +51,9 @@ class Firebase:
         )
         return auth.create_custom_token(user.uid)
 
+    def get_user_by_id(self, userid: str):
+        return auth.get_user(userid)
+
     def get_user_id_by_token(self, token: str):
         decoded_token = auth.verify_id_token(token)
         return decoded_token['uid']
@@ -88,20 +91,28 @@ class Firebase:
 
     def get_all_friends(self, token: str):
         user_id = self.get_user_id_by_token(token)
-        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
+        favourite_document_ref = self.friends_ref.where('user_id', '==', user_id).get()
         fri_list = []
+        # get_user_by_id
         for fav in favourite_document_ref:
-            fri_list.append(fav.to_dict())
+            fridend = self.get_user_by_id(fav.get('friend_id'))
+            fri_list.append({
+                'user_id': fav.get('user_id'),
+                'friend': {
+                    'display_name': fridend.display_name,
+                    'email': fridend.email
+                }
+            })
         return fri_list
 
     def add_friend(self, token: str, friend_id: str):
         user_id = self.get_user_id_by_token(token)
-        friends = self.get_favouties_by_id(user_id, friend_id)
+        friends = self.get_friends_by_id(user_id, friend_id)
         count = sum(1 for x in friends)
         if count != 0:
             return False
         friend = {'user_id': user_id, 'friend_id': friend_id}
-        ref = self.favourites_ref.document()
+        ref = self.friends_ref.document()
         ref.set(friend)
         return True
 

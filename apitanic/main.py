@@ -5,6 +5,7 @@ from sanic_openapi import swagger_blueprint, openapi_blueprint, doc
 from apitanic.controller.imdb import imdbBlueprint
 from apitanic.controller.user import userBlueprint
 from apitanic.controller.favourites import favBlueprint
+from apitanic.controller.friends import friendsBlueprint
 
 
 app = Sanic(strict_slashes=True)
@@ -19,6 +20,7 @@ app.config.API_CONTACT_EMAIL = 'apitanic@example.com'
 app.blueprint(userBlueprint)
 app.blueprint(imdbBlueprint)
 app.blueprint(favBlueprint)
+app.blueprint(friendsBlueprint)
 
 app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
