@@ -91,16 +91,16 @@ class Firebase:
 
     def get_all_friends(self, token: str):
         user_id = self.get_user_id_by_token(token)
-        favourite_document_ref = self.friends_ref.where('user_id', '==', user_id).get()
+        friends_document_ref = self.friends_ref.where('user_id', '==', user_id).get()
         fri_list = []
         # get_user_by_id
-        for fav in favourite_document_ref:
-            fridend = self.get_user_by_id(fav.get('friend_id'))
+        for fav in friends_document_ref:
+            friend = self.get_user_by_id(fav.get('friend_id'))
             fri_list.append({
                 'user_id': fav.get('user_id'),
                 'friend': {
-                    'display_name': fridend.display_name,
-                    'email': fridend.email
+                    'display_name': friend.display_name,
+                    'email': friend.email
                 }
             })
         return fri_list
