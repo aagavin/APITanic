@@ -6,12 +6,14 @@ from apitanic.model.user import User
 class Favourites(Firebase):
     def __init__(self):
         Firebase.__init__(self)
+        self.favourites_ref = self.get_collection_ref('favourites')
 
     async def get_favoutie_by_id(self, user_id: str, imdb_id: str):
-        return self.favourites_ref.where('user_id', '==', user_id).where('imdb_id', '==', imdb_id).get()
+        # return self.favourites_ref.where('user_id', '==', user_id).where('imdb_id', '==', imdb_id).get()
+        return await self.search_two_where(self.favourites_ref, 'user_id', user_id, 'imdb_id', imdb_id)
 
     async def __get_favourites(self, user_id: str) -> list:
-        favourite_document_ref = self.favourites_ref.where('user_id', '==', user_id).get()
+        favourite_document_ref = await self.search_one_where(self.favourites_ref, 'user_id', user_id)
         return [fav.to_dict() for fav in favourite_document_ref]
 
     async def get_all_favourites(self, token: str) -> list:
