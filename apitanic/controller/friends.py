@@ -1,4 +1,4 @@
-from apitanic.model.firebase import Firebase
+from apitanic.model.friends import Friends
 from sanic.response import json, HTTPResponse
 from sanic.request import Request
 from sanic import Blueprint
@@ -6,7 +6,7 @@ from sanic.views import HTTPMethodView
 from sanic_openapi import doc
 
 friendsBlueprint = Blueprint('friends', url_prefix='friends')
-firebase = Firebase()
+friends = Friends()
 
 
 class FriendsController(HTTPMethodView):
@@ -14,7 +14,7 @@ class FriendsController(HTTPMethodView):
     @doc.summary('')
     async def get(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
-        firends = await firebase.get_all_friends(token)
+        firends = await friends.get_all_friends(token)
         return json({'data': {'friends': firends}})
 
     @doc.summary('Add a new friend')
@@ -24,7 +24,7 @@ class FriendsController(HTTPMethodView):
     async def post(self, request: Request):
         token = request.headers['token']
         friend_id = request.json['friend_id']
-        added = firebase.add_friend(token, friend_id)
+        added = await friends.add_friend(token, friend_id)
         if not added:
             return json({'error': 'Error with adding friend'})
         return json({'data': 'success'})
@@ -36,7 +36,7 @@ class FriendsController(HTTPMethodView):
     async def delete(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
         friend_id = request.headers['friend_id']
-        firebase.delete_friend(token, friend_id)
+        await friends.delete_friend(token, friend_id)
         return json({'data': 'success'})
 
 

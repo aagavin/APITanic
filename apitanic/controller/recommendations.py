@@ -1,4 +1,4 @@
-from apitanic.model.firebase import Firebase
+from apitanic.model.favourites import Favourites
 from sanic.response import json, HTTPResponse
 from sanic.request import Request
 from sanic import Blueprint
@@ -6,7 +6,7 @@ from sanic_openapi import doc
 
 
 recommendationsBlueprint = Blueprint('recommendations', url_prefix='recommendations')
-firebase = Firebase()
+favourites = Favourites()
 
 
 @recommendationsBlueprint.route('/')
@@ -16,5 +16,5 @@ firebase = Firebase()
 @doc.produces('')
 async def get(request: Request) -> HTTPResponse:
     token = request.headers['token']
-    recommendations = await firebase.get_recommendations(token)
+    recommendations = await favourites.get_recommendations(token)
     return json({'data': {'recommendations': recommendations}})
