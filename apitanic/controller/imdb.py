@@ -11,7 +11,7 @@ from sanic_openapi import doc
 imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 
 
-@imdbBlueprint.route('/title/<imdbid>/', methods=['GET', 'OPTIONS'])
+@imdbBlueprint.route('/title/<imdbid>/', methods=['GET'])
 @doc.summary("get movie by imdbid")
 @doc.description("Returns a movie object by the imdb id")
 @doc.consumes({"imdbid": str}, location="path")
@@ -23,7 +23,7 @@ async def title_by_id(request: Request, imdbid: str):
     return json({'data': {'movie': data.json()}})
 
 
-@imdbBlueprint.route('/search/', methods=['GET', 'OPTIONS'])
+@imdbBlueprint.route('/search/', methods=['GET'])
 @doc.summary("Search imdb")
 @doc.description("Searches imdb for a movie")
 @doc.consumes({"q": str}, location="query")
@@ -38,7 +38,7 @@ async def search_movie(request: Request):
     return json({'data': movies_only})
 
 
-@imdbBlueprint.route('/popular/', methods=['GET', 'OPTIONS'])
+@imdbBlueprint.route('/popular/', methods=['GET'])
 @doc.summary('Most popular movies')
 @doc.description('Gets the most popular movies at time of request')
 @doc.consumes(None)

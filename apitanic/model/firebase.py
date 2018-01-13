@@ -98,7 +98,7 @@ class Firebase:
         for fav in friends_document_ref:
             friend = self.get_user_by_id(fav.get('friend_id'))
             fri_list.append({
-                'user_id': fav.get('user_id'),
+                'user_id': friend.uid,
                 'friend': {
                     'display_name': friend.display_name,
                     'email': friend.email
@@ -123,9 +123,6 @@ class Firebase:
         for fri in doc_refs:
             fri.reference.delete()
 
-    # TODO
-    # get users friends
-    # get users friends favourites put it in a set
     async def get_recommendations(self, token: str):
         users_friends = await self.get_all_friends(token)
         user_fav = [a['imdb_id'] for a in self.get_all_favourites(token)]
@@ -135,4 +132,4 @@ class Firebase:
         for ffav in friends_fav:
             for f in ffav:
                 friends_imdb_ids.append(f['imdb_id'])
-        print('sdfsdf')
+        return set(user_fav) - set(friends_imdb_ids)
