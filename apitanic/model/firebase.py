@@ -5,10 +5,9 @@ from . import CollectionReference
 class Firebase(object):
 
     def __init__(self):
-        self.favourites_ref = firebase_db.collection('favourites')
-        self.friends_ref = firebase_db.collection('friends')
+        pass
 
-    async def collection_ref(self, collection_name: str):
+    def get_collection_ref(self, collection_name: str):
         return firebase_db.collection(collection_name)
 
     async def search_one_where(

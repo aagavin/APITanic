@@ -7,10 +7,12 @@ from sanic.response import json
 from sanic.request import Request
 from sanic import Blueprint
 from sanic_openapi import doc
+from functools import lru_cache
 
 imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 
 
+@lru_cache(maxsize=64)
 @imdbBlueprint.route('/title/<imdbid>/', methods=['GET'])
 @doc.summary("get movie by imdbid")
 @doc.description("Returns a movie object by the imdb id")
@@ -23,6 +25,7 @@ async def title_by_id(request: Request, imdbid: str):
     return json({'data': {'movie': data.json()}})
 
 
+@lru_cache(maxsize=64)
 @imdbBlueprint.route('/search/', methods=['GET'])
 @doc.summary("Search imdb")
 @doc.description("Searches imdb for a movie")
@@ -38,6 +41,7 @@ async def search_movie(request: Request):
     return json({'data': movies_only})
 
 
+@lru_cache(maxsize=5)
 @imdbBlueprint.route('/popular/', methods=['GET'])
 @doc.summary('Most popular movies')
 @doc.description('Gets the most popular movies at time of request')

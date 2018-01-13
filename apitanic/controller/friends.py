@@ -11,7 +11,10 @@ friends = Friends()
 
 class FriendsController(HTTPMethodView):
 
-    @doc.summary('')
+    @doc.summary('Get all friends')
+    @doc.description('With token in header return a list of favourites')
+    @doc.consumes({'token': str}, location='header')
+    @doc.produces({'data': {friends: list}})
     async def get(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
         firends = await friends.get_all_friends(token)
@@ -21,6 +24,7 @@ class FriendsController(HTTPMethodView):
     @doc.description('Add a new friend to the list of friends')
     @doc.consumes({'token': str}, location='header')
     @doc.consumes({'friendId': str}, location='body')
+    @doc.produces({'data': str})
     async def post(self, request: Request):
         token = request.headers['token']
         friend_id = request.json['friend_id']
@@ -29,10 +33,10 @@ class FriendsController(HTTPMethodView):
             return json({'error': 'Error with adding friend'})
         return json({'data': 'success'})
 
-    @doc.summary('')
-    @doc.description('')
-    @doc.consumes('')
-    @doc.produces('')
+    @doc.summary('Remove a friend')
+    @doc.description('Remove a friend')
+    @doc.consumes({'token': str}, location='header')
+    @doc.produces({'data': str})
     async def delete(self, request: Request) -> HTTPResponse:
         token = request.headers['token']
         friend_id = request.headers['friend_id']

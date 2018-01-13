@@ -7,9 +7,10 @@ from apitanic.model.user import User
 class Friends(Firebase):
     def __init__(self):
         Firebase.__init__(self)
+        self.friends_ref = self.get_collection_ref('friends')
 
     async def get_friends_by_id(self, user_id: str, friend_id: str):
-        return self.friends_ref.where('friend_id', '==', friend_id).where('user_id', '==', user_id).get()
+        return await self.search_two_where(self.friends_ref, friend_id, friend_id, user_id, user_id)
 
     async def get_all_friends(self, token: str):
         user_id = await User.get_user_id_by_token(token)
