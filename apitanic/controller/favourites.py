@@ -17,7 +17,9 @@ class FavouritesController(HTTPMethodView):
 
     @staticmethod
     @doc.summary('Get a favourite by id')
-    @doc.description('Get a ')
+    @doc.description('Get a favourite by id with token in header')
+    @doc.consumes({'imdbid': str}, location='path')
+    @doc.produces({'data': {'favourite': dict}})
     async def get_by_id(request: Request, imdbid: str) -> HTTPResponse:
         token = request.headers['token']
         user_id = await user.get_user_id_by_token(token)
