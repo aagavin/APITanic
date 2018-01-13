@@ -6,6 +6,7 @@ from apitanic.controller.imdb import imdbBlueprint
 from apitanic.controller.user import userBlueprint
 from apitanic.controller.favourites import favBlueprint
 from apitanic.controller.friends import friendsBlueprint
+from apitanic.controller.recommendations import recommendationsBlueprint
 
 
 app = Sanic(strict_slashes=True)
@@ -21,6 +22,7 @@ app.blueprint(userBlueprint)
 app.blueprint(imdbBlueprint)
 app.blueprint(favBlueprint)
 app.blueprint(friendsBlueprint)
+app.blueprint(recommendationsBlueprint)
 
 app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
