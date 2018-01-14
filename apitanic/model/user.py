@@ -41,3 +41,13 @@ class User(Firebase):
             app=firebase_app
         )
         return auth.create_custom_token(user.uid)
+
+    async def update_account(self, token: str, email: str, display_name: str, new_password: str) -> bool:
+        uid = await User.get_user_id_by_token(token)
+        auth.update_user(
+            uid,
+            email=email,
+            display_name=display_name,
+            password=new_password
+        )
+        return True

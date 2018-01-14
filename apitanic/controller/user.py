@@ -29,13 +29,27 @@ class UserController(HTTPMethodView):
     @doc.consumes({'user': str, 'displayName': str, 'email': str}, location='body')
     @doc.description('Create a user account and returns a token')
     @doc.produces({'data': {'token': str}})
-    async def post(self, request: Request):
+    async def post(self, request: Request)-> HTTPResponse:
         token = userModel.create_account(
             request.json['email'],
             request.json['password'],
             request.json['displayName']
         )
         return json({'data': {'token': token}})
+
+    @doc.summary('Updates an account')
+    @doc.description('Updates an account email, display name, and password')
+    @doc.consumes({'token': str}, location='header')
+    @doc.produces({'data': bool})
+    async def put(self, request: Request)-> HTTPResponse:
+        token = request.headers.get('token')
+        result = await userModel.update_account(
+            token,
+            request.json['email'],
+            request.json['display_name'],
+            request.json['new_password']
+        )
+        return json({'data': result})
 
 
 userBlueprint.add_route(UserController.as_view(), '/')
