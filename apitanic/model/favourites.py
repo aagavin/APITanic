@@ -47,4 +47,4 @@ class Favourites(Firebase):
         for ffav in friends_fav:
             for f in await ffav:
                 friends_imdb_ids.append(f['imdb_id'])
-        return set(user_fav) - set(friends_imdb_ids)
+        return set(friends_imdb_ids) - set(user_fav)
