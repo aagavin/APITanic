@@ -8,8 +8,10 @@ from sanic.request import Request
 from sanic import Blueprint
 from sanic_openapi import doc
 from functools import lru_cache
+from apitanic.model.imdb import ImdbModel
 
 imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
+imdb = ImdbModel()
 
 
 @lru_cache(maxsize=64)
@@ -19,10 +21,7 @@ imdbBlueprint = Blueprint('imdb', url_prefix='imdb')
 @doc.consumes({"imdbid": str}, location="path")
 @doc.produces({'data': {'movie': object}})
 async def title_by_id(request: Request, imdbid: str):
-    api_key = os.getenv('openapikey')
-    url = f'https://www.omdbapi.com/?i={imdbid}&apikey={api_key}'
-    data = requests.get(url)
-    return json({'data': {'movie': data.json()}})
+    return json({'data': {'movie': await imdb.get_by_id(imdbid)}})
 
 
 @lru_cache(maxsize=64)
@@ -33,12 +32,7 @@ async def title_by_id(request: Request, imdbid: str):
 @doc.produces({'data': list})
 async def search_movie(request: Request):
     movie_query = request.args['q'][0].replace(' ', '_').lower()
-    url = f'https://v2.sg.media-imdb.com/suggests/{movie_query[0]}/{movie_query}.json'
-    rs = requests.get(url)
-    data = rs.text
-    movies = ujson.loads(data.split('${}('.format(movie_query))[1][:-1])
-    movies_only = [m for m in movies['d'] if m.get('q') is not None and m['q'] == 'feature']
-    return json({'data': movies_only})
+    return json({'data': await imdb.search(movie_query)})
 
 
 @lru_cache(maxsize=5)
@@ -48,29 +42,4 @@ async def search_movie(request: Request):
 @doc.consumes(None)
 @doc.produces({'data': {'movies': object}})
 async def popular_movies(request: Request):
-    popular_url = 'http://www.imdb.com/chart/moviemeter'
-    data = requests.get(popular_url).text
-    raw_string = lxml.html.fromstring(data)
-
-    posters = raw_string.xpath('//td[@class=\'posterColumn\']/a')
-    titles = raw_string.xpath('//td[@class=\'titleColumn\']/a')
-    ratings = raw_string.xpath('//td[@class=\'ratingColumn imdbRating\']')
-
-    popular_movies_list = []
-
-    for i in range(50):
-        # ratings[i].getchildren()
-        movie = {
-            'imdbid': posters[i].attrib['href'].split('/')[2],
-            'title': titles[i].text,
-            'poster_url': posters[i].find('img').attrib['src'],
-            'people': titles[i].attrib['title'],
-            # 'rating': ratings[i].text
-        }
-        if ratings[i].find('strong') is not None:
-            movie['rating'] = ratings[i].find('strong').text
-        else:
-            movie['rating'] = None
-        popular_movies_list.append(movie)
-
-    return json({'data': {'movies': popular_movies_list}})
+    return json({'data': {'movies': await imdb.get_popular_movies()}})
