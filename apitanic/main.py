@@ -2,7 +2,7 @@ from sanic import Sanic
 from sanic.response import json
 from sanic_openapi import swagger_blueprint, openapi_blueprint, doc
 
-from apitanic.controller.imdb import imdbBlueprint
+from apitanic.controller.media import mediaBlueprint
 from apitanic.controller.user import userBlueprint
 from apitanic.controller.favourites import favBlueprint
 from apitanic.controller.friends import friendsBlueprint
@@ -19,7 +19,7 @@ app.config.API_PRODUCES_CONTENT_TYPES = ['application/json']
 app.config.API_CONTACT_EMAIL = 'apitanic@example.com'
 
 app.blueprint(userBlueprint)
-app.blueprint(imdbBlueprint)
+app.blueprint(mediaBlueprint)
 app.blueprint(favBlueprint)
 app.blueprint(friendsBlueprint)
 app.blueprint(recommendationsBlueprint)
